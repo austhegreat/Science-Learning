@@ -538,42 +538,57 @@ function triggerBrowserPrint() {
 }
 
 // ----------------------------------------------------------------------
-// SEARCH ENGINE
+// SEARCH ENGINE & MOBILE SEARCH
 // ----------------------------------------------------------------------
+function toggleMobileSearch() {
+  const panel = document.getElementById('mobileSearchPanel');
+  if (panel) {
+    panel.classList.toggle('hidden');
+    if (!panel.classList.contains('hidden')) {
+      const input = document.getElementById('mobileSearchInput');
+      if (input) input.focus();
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+}
+
 function setupSearch() {
-  const input = document.getElementById('globalSearch');
-  if (!input) return;
+  const setupInput = (inputId, dropdownId, closePanel = false) => {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    if (!input || !dropdown) return;
 
-  input.addEventListener('input', (e) => {
-    const val = e.target.value.toLowerCase().trim();
-    const dropdown = document.getElementById('searchDropdown');
-    if (!dropdown) return;
+    input.addEventListener('input', (e) => {
+      const val = e.target.value.toLowerCase().trim();
+      if (val.length < 2) {
+        dropdown.classList.add('hidden');
+        return;
+      }
 
-    if (val.length < 2) {
-      dropdown.classList.add('hidden');
-      return;
-    }
+      const matches = CHAPTERS_DATA.filter(c =>
+        c.title.toLowerCase().includes(val) ||
+        c.summary.toLowerCase().includes(val) ||
+        c.subtopics.some(s => s.title.toLowerCase().includes(val) || s.points.some(p => p.toLowerCase().includes(val))) ||
+        c.keyTerms.some(k => k.term.toLowerCase().includes(val) || k.def.toLowerCase().includes(val))
+      );
 
-    const matches = CHAPTERS_DATA.filter(c =>
-      c.title.toLowerCase().includes(val) ||
-      c.summary.toLowerCase().includes(val) ||
-      c.subtopics.some(s => s.title.toLowerCase().includes(val) || s.points.some(p => p.toLowerCase().includes(val))) ||
-      c.keyTerms.some(k => k.term.toLowerCase().includes(val) || k.def.toLowerCase().includes(val))
-    );
+      if (matches.length === 0) {
+        dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">No matching science concepts found for "${val}"</div>`;
+      } else {
+        dropdown.innerHTML = matches.map(m => `
+          <div onclick="loadChapter(${m.id}); document.getElementById('${dropdownId}').classList.add('hidden'); ${closePanel ? 'toggleMobileSearch();' : ''} scrollToSection('lesson-viewer');" 
+               class="p-2.5 hover:bg-slate-800 rounded-lg cursor-pointer transition-colors text-left border-b border-slate-800/80 last:border-0">
+            <div class="text-xs font-bold text-emerald-400">Chapter ${m.id}: ${m.title}</div>
+            <div class="text-[11px] text-slate-400 line-clamp-1">${m.summary}</div>
+          </div>
+        `).join('');
+      }
+      dropdown.classList.remove('hidden');
+    });
+  };
 
-    if (matches.length === 0) {
-      dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">No matching science concepts found for "${val}"</div>`;
-    } else {
-      dropdown.innerHTML = matches.map(m => `
-        <div onclick="loadChapter(${m.id}); document.getElementById('searchDropdown').classList.add('hidden'); scrollToSection('lesson-viewer');" 
-             class="p-2.5 hover:bg-slate-100 rounded-lg cursor-pointer transition-colors text-left border-b border-slate-100 last:border-0">
-          <div class="text-xs font-bold text-slate-800">Chapter ${m.id}: ${m.title}</div>
-          <div class="text-[11px] text-slate-500 line-clamp-1">${m.summary}</div>
-        </div>
-      `).join('');
-    }
-    dropdown.classList.remove('hidden');
-  });
+  setupInput('globalSearch', 'searchDropdown', false);
+  setupInput('mobileSearchInput', 'mobileSearchDropdown', true);
 }
 
 function scrollToSection(id) {

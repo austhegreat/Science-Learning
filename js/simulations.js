@@ -11,6 +11,10 @@ const SimulationsEngine = {
       cancelAnimationFrame(this._animFrame);
       this._animFrame = null;
     }
+    if (this.fissionState && this.fissionState.animId) {
+      cancelAnimationFrame(this.fissionState.animId);
+      this.fissionState.animId = null;
+    }
     if (this.metroInterval) {
       clearInterval(this.metroInterval);
       this.metroInterval = null;
@@ -226,8 +230,8 @@ const SimulationsEngine = {
 
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
           <div class="sm:col-span-8">
-            <button id="sternumPressBtn" onmousedown="SimulationsEngine.hospitalCompress()" 
-                    class="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-600 via-rose-500 to-red-600 hover:from-rose-500 hover:to-red-500 active:scale-95 text-white font-black text-sm uppercase tracking-wider shadow-xl shadow-rose-600/30 flex items-center justify-center gap-3 transition-all">
+            <button id="sternumPressBtn" onclick="SimulationsEngine.hospitalCompress()" 
+                    class="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-600 via-rose-500 to-red-600 hover:from-rose-500 hover:to-red-500 active:scale-95 text-white font-black text-sm uppercase tracking-wider shadow-xl shadow-rose-600/30 flex items-center justify-center gap-3 transition-all touch-manipulation select-none cursor-pointer">
               <i data-lucide="heart" class="w-5 h-5 text-white animate-ping"></i>
               <span>COMPRESS STERNUM (PUSH 5-6 CM DOWN)</span>
               <span id="cprCycleCount" class="font-mono bg-black/30 px-3 py-1 rounded-lg text-xs">0 / 30</span>
@@ -692,6 +696,102 @@ const SimulationsEngine = {
   },
 
   // -------------------------------------------------------------
+  // CHAPTER 6: ANTAGONISTIC MUSCLES & ARM BIOMECHANICS
+  // -------------------------------------------------------------
+  getArmBiomechanicsSim: function() {
+    return `
+      <div class="max-w-2xl mx-auto p-4 sm:p-8 bg-slate-900 text-white rounded-3xl border border-slate-800 shadow-xl space-y-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 sm:w-12 h-10 sm:h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+            <i data-lucide="bone" class="w-5 sm:w-6 h-5 sm:h-6"></i>
+          </div>
+          <div>
+            <h4 class="font-black text-base sm:text-lg text-slate-100">Antagonistic Muscle Biomechanics Simulator</h4>
+            <p class="text-xs text-slate-400">Flex and extend the elbow hinge joint to observe reciprocal Biceps &amp; Triceps action.</p>
+          </div>
+        </div>
+
+        <div class="p-4 sm:p-6 rounded-2xl bg-slate-950 border border-slate-800">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-300 mb-2">
+            <span>Elbow Joint Flexion Angle:</span>
+            <span id="armFlexAngleLabel" class="text-emerald-400 font-mono text-sm">70° (Flexion)</span>
+          </div>
+          <input type="range" id="armAngleSlider" min="25" max="155" value="70" oninput="SimulationsEngine.updateArmAngle(this.value)" class="w-full accent-emerald-500 h-8 touch-manipulation cursor-pointer">
+          <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+            <span>25° (Maximum Flexion)</span>
+            <span>90° (Right Angle)</span>
+            <span>155° (Full Extension)</span>
+          </div>
+        </div>
+
+        <!-- Muscle Status Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div id="bicepsStatusBox" class="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-600/50 transition-all">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-400">Biceps Brachii</span>
+              <span id="bicepsStatePill" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">CONTRACTED</span>
+            </div>
+            <p id="bicepsStateDesc" class="text-xs text-slate-300 mt-1">Shortens and thickens, pulling on the radius bone via tendon to bend the forearm upwards.</p>
+          </div>
+
+          <div id="tricepsStatusBox" class="p-4 rounded-2xl bg-slate-950 border border-slate-800 transition-all">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Triceps Brachii</span>
+              <span id="tricepsStatePill" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-bold">RELAXED</span>
+            </div>
+            <p id="tricepsStateDesc" class="text-xs text-slate-400 mt-1">Elongates and thins, yielding passive tension as forearm bends.</p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs text-slate-400 text-center leading-relaxed">
+          <strong class="text-slate-200">KSSM Key Law:</strong> Skeletal muscles only exert pulling forces by contracting; they cannot push. Therefore, locomotion requires <span class="text-emerald-400 font-bold">antagonistic pairs</span> working in opposition.
+        </div>
+      </div>
+    `;
+  },
+  initArmBiomechanicsSim: function() {
+    this.updateArmAngle(70);
+  },
+  updateArmAngle: function(deg) {
+    const val = parseInt(deg);
+    const label = document.getElementById('armFlexAngleLabel');
+    const bBox = document.getElementById('bicepsStatusBox');
+    const bPill = document.getElementById('bicepsStatePill');
+    const bDesc = document.getElementById('bicepsStateDesc');
+    const tBox = document.getElementById('tricepsStatusBox');
+    const tPill = document.getElementById('tricepsStatePill');
+    const tDesc = document.getElementById('tricepsStateDesc');
+
+    if (!label) return;
+
+    if (val < 90) {
+      label.textContent = `${val}° (Arm Flexion)`;
+      label.className = "text-emerald-400 font-mono text-sm";
+      bBox.className = "p-4 rounded-2xl bg-emerald-950/70 border border-emerald-500 transition-all";
+      bPill.textContent = "CONTRACTS & BULGES";
+      bPill.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold";
+      bDesc.textContent = "Contracts (shortens & fattens), pulling the tendon on the radius bone to bend the forearm upwards.";
+
+      tBox.className = "p-4 rounded-2xl bg-slate-950 border border-slate-800 transition-all";
+      tPill.textContent = "RELAXES";
+      tPill.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-bold";
+      tDesc.textContent = "Relaxes (lengthens & thins) allowing elbow flexion.";
+    } else {
+      label.textContent = `${val}° (Arm Extension)`;
+      label.className = "text-sky-400 font-mono text-sm";
+      tBox.className = "p-4 rounded-2xl bg-sky-950/70 border border-sky-500 transition-all";
+      tPill.textContent = "CONTRACTS & PULLS";
+      tPill.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-bold";
+      tDesc.textContent = "Contracts (shortens), pulling the ulna bone downwards via tendon to straighten the arm.";
+
+      bBox.className = "p-4 rounded-2xl bg-slate-950 border border-slate-800 transition-all";
+      bPill.textContent = "RELAXES";
+      bPill.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-bold";
+      bDesc.textContent = "Relaxes (lengthens & thins) allowing elbow extension.";
+    }
+  },
+
+  // -------------------------------------------------------------
   // CHAPTER 7: ENDOCRINE SYSTEM
   // -------------------------------------------------------------
   getEndocrineHormoneSim: function() {
@@ -772,6 +872,137 @@ const SimulationsEngine = {
         <span class="text-rose-200">${g.deficiency}</span>
       </div>
     `;
+  },
+
+  // -------------------------------------------------------------
+  // CHAPTER 8: BOHR QUANTUM ATOMIC ORBITAL SIMULATOR
+  // -------------------------------------------------------------
+  getBohrOrbitAtomSim: function() {
+    return `
+      <div class="max-w-2xl mx-auto p-4 sm:p-8 bg-slate-900 text-white rounded-3xl border border-slate-800 shadow-xl space-y-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 sm:w-12 h-10 sm:h-12 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
+            <i data-lucide="atom" class="w-5 sm:w-6 h-5 sm:h-6"></i>
+          </div>
+          <div>
+            <h4 class="font-black text-base sm:text-lg text-slate-100">Quantum Bohr Atomic Orbit Shell Simulator</h4>
+            <p class="text-xs text-slate-400">Select an element to observe electron arrangements across K, L, M shells and octet stability.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 sm:gap-2">
+          ${[
+            { s: 'H', z: 1 },
+            { s: 'He', z: 2 },
+            { s: 'C', z: 6 },
+            { s: 'O', z: 8 },
+            { s: 'Ne', z: 10 },
+            { s: 'Na', z: 11 },
+            { s: 'Cl', z: 17 },
+            { s: 'Ar', z: 18 }
+          ].map(e => `
+            <button onclick="SimulationsEngine.selectBohrElement('${e.s}')" id="bohrBtn-${e.s}" 
+                    class="p-2 sm:p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-center transition-all touch-manipulation">
+              <div class="text-[9px] font-mono text-slate-400">${e.z}</div>
+              <div class="font-black text-sm text-slate-100">${e.s}</div>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- 2D Canvas for Bohr Model Orbitals -->
+        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center relative overflow-hidden flex flex-col items-center">
+          <canvas id="bohrCanvas" width="300" height="300" class="max-w-[260px] sm:max-w-[300px] h-auto"></canvas>
+          <div id="bohrElementInfo" class="mt-3 text-center"></div>
+        </div>
+      </div>
+    `;
+  },
+  bohrElements: {
+    H: { name: "Hydrogen", z: 1, a: 1, config: [1], stability: "Unstable (Needs 1e⁻ for duplet)" },
+    He: { name: "Helium", z: 2, a: 4, config: [2], stability: "Stable Duplet Arrangement (Noble Gas)" },
+    C: { name: "Carbon", z: 6, a: 12, config: [2, 4], stability: "Unstable (Forms 4 covalent bonds)" },
+    O: { name: "Oxygen", z: 8, a: 16, config: [2, 6], stability: "Unstable (Needs 2e⁻ for octet)" },
+    Ne: { name: "Neon", z: 10, a: 20, config: [2, 8], stability: "Stable Octet Arrangement (Noble Gas)" },
+    Na: { name: "Sodium", z: 11, a: 23, config: [2, 8, 1], stability: "Unstable Metal (Donates 1 valence e⁻)" },
+    Cl: { name: "Chlorine", z: 17, a: 35, config: [2, 8, 7], stability: "Unstable Halogen (Accepts 1e⁻ for octet)" },
+    Ar: { name: "Argon", z: 18, a: 40, config: [2, 8, 8], stability: "Stable Octet Arrangement (Noble Gas)" }
+  },
+  initBohrOrbitAtomSim: function() {
+    this.selectBohrElement('Na');
+  },
+  selectBohrElement: function(sym) {
+    const el = this.bohrElements[sym] || this.bohrElements['Na'];
+    ['H','He','C','O','Ne','Na','Cl','Ar'].forEach(s => {
+      const btn = document.getElementById(`bohrBtn-${s}`);
+      if (btn) {
+        btn.className = s === sym
+          ? "p-2 sm:p-2.5 rounded-xl bg-purple-600 text-white font-bold border border-purple-400 shadow-md text-center touch-manipulation"
+          : "p-2 sm:p-2.5 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 text-center touch-manipulation";
+      }
+    });
+
+    const info = document.getElementById('bohrElementInfo');
+    if (info) {
+      const isStable = el.stability.includes('Stable');
+      info.innerHTML = `
+        <h5 class="text-base font-black text-slate-100">${el.name} (${sym})</h5>
+        <div class="flex items-center justify-center gap-3 text-xs font-mono my-1">
+          <span class="text-purple-300">Protons: <strong>${el.z}</strong></span>
+          <span class="text-sky-300">Neutrons: <strong>${el.a - el.z}</strong></span>
+          <span class="text-emerald-300">Config: <strong>${el.config.join('.')}</strong></span>
+        </div>
+        <div class="inline-block px-3 py-1 rounded-full text-xs font-bold mt-1 ${isStable ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+          ${el.stability}
+        </div>
+      `;
+    }
+
+    const canvas = document.getElementById('bohrCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const cx = 150, cy = 150;
+    ctx.clearRect(0, 0, 300, 300);
+
+    // Glowing Nucleus
+    ctx.beginPath();
+    ctx.arc(cx, cy, 18, 0, Math.PI * 2);
+    ctx.fillStyle = '#ec4899';
+    ctx.shadowColor = '#ec4899';
+    ctx.shadowBlur = 12;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 10px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${el.z}p+`, cx, cy);
+
+    // Shells
+    const shellRadii = [45, 80, 115];
+    el.config.forEach((numElectrons, shellIdx) => {
+      const r = shellRadii[shellIdx];
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(147, 51, 234, 0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw electrons
+      for (let i = 0; i < numElectrons; i++) {
+        const theta = (i * 2 * Math.PI) / numElectrons - Math.PI / 2;
+        const ex = cx + r * Math.cos(theta);
+        const ey = cy + r * Math.sin(theta);
+        ctx.beginPath();
+        ctx.arc(ex, ey, 5.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#38bdf8';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    });
   },
 
   // -------------------------------------------------------------
@@ -954,6 +1185,205 @@ const SimulationsEngine = {
       vf.style.transitionDuration = "0.7s";
       vf.style.transform = "translateY(150px)";
     }, 100);
+  },
+
+  // -------------------------------------------------------------
+  // CHAPTER 12: NUCLEAR FISSION CANVAS CHAIN REACTION
+  // -------------------------------------------------------------
+  getNuclearFissionCanvasSim: function() {
+    return `
+      <div class="max-w-3xl mx-auto p-4 sm:p-8 bg-slate-900 text-white rounded-3xl border border-slate-800 shadow-xl space-y-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 sm:w-12 h-10 sm:h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            <i data-lucide="radiation" class="w-5 sm:w-6 h-5 sm:h-6"></i>
+          </div>
+          <div>
+            <h4 class="font-black text-base sm:text-lg text-slate-100">Nuclear Fission Chain Reaction Simulator</h4>
+            <p class="text-xs text-slate-400">Shoot thermal neutrons into U-235 atoms and manage Boron SCRAM control rods.</p>
+          </div>
+        </div>
+
+        <div class="p-3 sm:p-4 rounded-2xl bg-slate-950 border border-slate-800">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2 text-xs font-mono">
+            <span class="text-emerald-400 font-bold">Reactor State: <span id="fissionStatusText">Ready</span></span>
+            <span class="text-slate-400">Total Fissions: <strong id="fissionCountText" class="text-amber-400 font-bold">0</strong></span>
+          </div>
+          <canvas id="fissionCanvas" width="600" height="240" class="w-full h-52 sm:h-60 bg-black rounded-xl border border-slate-900"></canvas>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onclick="SimulationsEngine.fireFissionNeutron()" 
+                  class="py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 active:scale-95 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 touch-manipulation">
+            <i data-lucide="crosshair" class="w-4 h-4"></i>
+            <span>Fire Thermal Neutron (¹₀n)</span>
+          </button>
+
+          <button onclick="SimulationsEngine.toggleScramRods()" id="btnScramRods"
+                  class="py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 font-bold text-xs uppercase tracking-wider border border-slate-700 transition-all flex items-center justify-center gap-2 touch-manipulation">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-400"></i>
+            <span id="scramBtnText">Insert Boron SCRAM Rods</span>
+          </button>
+        </div>
+      </div>
+    `;
+  },
+  fissionState: {
+    nuclei: [],
+    neutrons: [],
+    scramActive: false,
+    fissionsCount: 0,
+    animId: null
+  },
+  initNuclearFissionCanvasSim: function() {
+    this.fissionState.scramActive = false;
+    this.fissionState.fissionsCount = 0;
+    this.fissionState.neutrons = [];
+    this.resetFissionNuclei();
+    this.startFissionLoop();
+  },
+  resetFissionNuclei: function() {
+    this.fissionState.nuclei = [];
+    for (let r = 0; r < 3; r++) {
+      for (let c = 0; c < 8; c++) {
+        this.fissionState.nuclei.push({
+          x: 100 + c * 60,
+          y: 50 + r * 70,
+          radius: 18,
+          active: true,
+          fissioning: false
+        });
+      }
+    }
+  },
+  startFissionLoop: function() {
+    const canvas = document.getElementById('fissionCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    const loop = () => {
+      ctx.fillStyle = '#050814';
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw SCRAM barrier if active
+      if (this.fissionState.scramActive) {
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+        ctx.fillRect(0, 0, width, height);
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(5, 5, width - 10, height - 10);
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText('BORON CONTROL RODS INSERTED — NEUTRONS ABSORBED', width / 2, 25);
+      }
+
+      // Draw U-235 Nuclei
+      this.fissionState.nuclei.forEach(n => {
+        if (n.active) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+          ctx.fillStyle = '#0284c7';
+          ctx.fill();
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 9px monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('²³⁵U', n.x, n.y);
+        }
+      });
+
+      // Update and Draw Neutrons
+      for (let i = this.fissionState.neutrons.length - 1; i >= 0; i--) {
+        const p = this.fissionState.neutrons[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Draw fast neutron
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#f59e0b';
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 6;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Absorb if SCRAM
+        if (this.fissionState.scramActive) {
+          this.fissionState.neutrons.splice(i, 1);
+          continue;
+        }
+
+        // Out of bounds
+        if (p.x < 0 || p.x > width || p.y < 0 || p.y > height) {
+          this.fissionState.neutrons.splice(i, 1);
+          continue;
+        }
+
+        // Check collision with U-235
+        for (let j = 0; j < this.fissionState.nuclei.length; j++) {
+          const nuc = this.fissionState.nuclei[j];
+          if (nuc.active) {
+            const dist = Math.hypot(p.x - nuc.x, p.y - nuc.y);
+            if (dist < nuc.radius + 4) {
+              nuc.active = false;
+              this.fissionState.neutrons.splice(i, 1);
+              this.fissionState.fissionsCount++;
+              const fcEl = document.getElementById('fissionCountText');
+              if (fcEl) fcEl.textContent = this.fissionState.fissionsCount;
+
+              if (window.ScienceGamesEngine) window.ScienceGamesEngine.playSfx('click');
+
+              // Release 3 new secondary fast neutrons
+              for (let k = 0; k < 3; k++) {
+                const angle = (k * 2 * Math.PI) / 3 + (Math.random() - 0.5);
+                const speed = 3.5 + Math.random() * 1.5;
+                this.fissionState.neutrons.push({
+                  x: nuc.x,
+                  y: nuc.y,
+                  vx: Math.cos(angle) * speed,
+                  vy: Math.sin(angle) * speed
+                });
+              }
+              break;
+            }
+          }
+        }
+      }
+
+      this.fissionState.animId = requestAnimationFrame(loop);
+    };
+
+    if (this.fissionState.animId) cancelAnimationFrame(this.fissionState.animId);
+    this.fissionState.animId = requestAnimationFrame(loop);
+  },
+  fireFissionNeutron: function() {
+    this.fissionState.neutrons.push({
+      x: 10,
+      y: 120 + (Math.random() - 0.5) * 80,
+      vx: 4.5,
+      vy: (Math.random() - 0.5) * 1.5
+    });
+    if (window.ScienceGamesEngine) window.ScienceGamesEngine.playSfx('click');
+  },
+  toggleScramRods: function() {
+    this.fissionState.scramActive = !this.fissionState.scramActive;
+    const btn = document.getElementById('btnScramRods');
+    const txt = document.getElementById('scramBtnText');
+    const st = document.getElementById('fissionStatusText');
+    if (this.fissionState.scramActive) {
+      if (btn) btn.className = "py-3.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 touch-manipulation";
+      if (txt) txt.textContent = "Withdraw Control Rods (Resume)";
+      if (st) st.textContent = "Halted by Boron (Subcritical)";
+      if (window.ScienceGamesEngine) window.ScienceGamesEngine.playSfx('correct');
+    } else {
+      if (btn) btn.className = "py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase tracking-wider border border-slate-700 transition-all flex items-center justify-center gap-2 touch-manipulation";
+      if (txt) txt.textContent = "Insert Boron SCRAM Rods";
+      if (st) st.textContent = "Critical (Reaction Live)";
+    }
   }
 };
 

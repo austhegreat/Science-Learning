@@ -46,40 +46,41 @@ const ThreeModelsEngine = {
 
     // Build the 3D Viewer Container Shell
     container.innerHTML = `
-      <div class="relative w-full rounded-3xl bg-slate-950 border border-slate-800 shadow-2xl overflow-hidden">
+      <div class="relative w-full rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 shadow-2xl overflow-hidden">
         <!-- 3D Viewport Canvas Container -->
-        <div id="threeCanvasWrapper" class="relative w-full h-[480px] bg-gradient-to-b from-slate-950 via-slate-900 to-black cursor-grab active:cursor-grabbing">
+        <div id="threeCanvasWrapper" class="relative w-full h-[340px] sm:h-[480px] bg-gradient-to-b from-slate-950 via-slate-900 to-black cursor-grab active:cursor-grabbing touch-none">
           <!-- 3D Overlay Badges & Instructions -->
-          <div class="absolute top-4 left-4 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
-            <span class="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 backdrop-blur-md">
-              🪐 Interactive 3D Model · Chapter ${chapterId}
+          <div class="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-10 flex flex-wrap items-center gap-1.5 sm:gap-2 pointer-events-none max-w-[62%] sm:max-w-none">
+            <span class="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 backdrop-blur-md truncate">
+              🪐 3D Chapter ${chapterId}
             </span>
-            <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-slate-900/80 text-slate-300 border border-slate-700/80 backdrop-blur-md">
+            <span class="hidden sm:inline-block px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-slate-900/80 text-slate-300 border border-slate-700/80 backdrop-blur-md">
               WebGL 60 FPS
             </span>
           </div>
 
-          <div class="absolute top-4 right-4 z-10 flex items-center gap-2">
-            <button onclick="ThreeModelsEngine.resetCamera()" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700/80 backdrop-blur-md transition-all text-xs font-mono" title="Reset View">
-              ⟲ Reset Camera
+          <div class="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2">
+            <button onclick="ThreeModelsEngine.resetCamera()" class="p-1.5 sm:p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 active:scale-95 text-slate-300 border border-slate-700/80 backdrop-blur-md transition-all text-[11px] sm:text-xs font-mono touch-manipulation flex items-center gap-1" title="Reset View">
+              <span>⟲</span>
+              <span class="hidden sm:inline">Reset</span>
             </button>
-            <button onclick="ThreeModelsEngine.toggleFullscreen()" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700/80 backdrop-blur-md transition-all text-xs font-mono" title="Fullscreen">
-              ⛶ Fullscreen
+            <button onclick="ThreeModelsEngine.toggleFullscreen()" class="p-1.5 sm:p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 active:scale-95 text-slate-300 border border-slate-700/80 backdrop-blur-md transition-all text-[11px] sm:text-xs font-mono touch-manipulation flex items-center gap-1" title="Fullscreen">
+              <span>⛶</span>
+              <span class="hidden sm:inline">Fullscreen</span>
             </button>
           </div>
 
           <!-- Bottom Gesture Hint -->
-          <div class="absolute bottom-3 left-4 z-10 pointer-events-none flex items-center gap-2 text-[11px] font-mono text-slate-400 bg-slate-950/70 px-3 py-1 rounded-lg border border-slate-800/80 backdrop-blur-md">
-            <span>🖱 Drag to Rotate 360°</span>
-            <span>·</span>
-            <span>⚲ Scroll to Zoom</span>
-            <span>·</span>
-            <span>Right-Click to Pan</span>
+          <div class="absolute bottom-2 left-2 right-2 sm:right-auto sm:bottom-3 sm:left-4 z-10 pointer-events-none flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-mono text-slate-400 bg-slate-950/85 px-2.5 py-1 rounded-lg border border-slate-800/80 backdrop-blur-md">
+            <span>👆 Drag Rotate 360°</span>
+            <span class="hidden sm:inline">·</span>
+            <span class="hidden sm:inline">⚲ Pinch/Scroll Zoom</span>
+            <span class="text-emerald-400 text-[9px] sm:hidden">Pinch: Zoom</span>
           </div>
         </div>
 
         <!-- Interactive 3D Model Control Bar -->
-        <div id="threeControlBar" class="p-4 sm:p-5 bg-slate-900/90 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div id="threeControlBar" class="p-3 sm:p-5 bg-slate-900/90 border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 text-xs">
           <!-- Populated per model -->
         </div>
       </div>
