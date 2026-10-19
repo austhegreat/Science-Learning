@@ -69,9 +69,16 @@ function renderChaptersList(filter = 'all') {
 
         <div>
           <div class="border-t border-slate-100 pt-3 flex items-center justify-between text-xs text-slate-400">
-            <span class="flex items-center gap-1.5">
-              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
-              ${ch.subtopics.length} Subtopics
+            <span class="flex items-center gap-2">
+              <span class="flex items-center gap-1">
+                <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                ${ch.subtopics.length}
+              </span>
+              <span class="text-slate-300">·</span>
+              <span class="flex items-center gap-1 text-emerald-600 font-semibold">
+                <i data-lucide="box" class="w-3.5 h-3.5"></i>
+                3D Model
+              </span>
             </span>
             <span class="text-emerald-600 font-bold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
               Explore Lesson
@@ -118,14 +125,26 @@ function loadChapter(id) {
 // Switch Lesson Sub-tabs
 function switchTab(tab) {
   currentTab = tab;
-  const tabs = ['notes', 'interactive', 'experiment', 'exam-tips', 'game'];
+  const tabs = ['notes', '3d-model', 'interactive', 'experiment', 'exam-tips', 'game'];
   tabs.forEach(t => {
     const btn = document.getElementById(`btn-tab-${t}`);
     if (btn) {
       if (t === tab) {
-        btn.className = "px-4 py-3 border-b-2 border-emerald-600 text-emerald-700 font-bold flex items-center gap-2 whitespace-nowrap";
+        if (t === '3d-model') {
+          btn.className = "px-4 py-3 border-b-2 border-emerald-400 text-emerald-300 font-bold flex items-center gap-2 whitespace-nowrap bg-emerald-500/10";
+        } else if (t === 'game') {
+          btn.className = "px-4 py-3 border-b-2 border-amber-400 text-amber-300 font-bold flex items-center gap-2 whitespace-nowrap bg-amber-500/10";
+        } else {
+          btn.className = "px-4 py-3 border-b-2 border-emerald-500 text-emerald-400 font-bold flex items-center gap-2 whitespace-nowrap bg-emerald-500/10";
+        }
       } else {
-        btn.className = "px-4 py-3 border-b-2 border-transparent text-slate-600 hover:text-slate-900 font-medium flex items-center gap-2 whitespace-nowrap";
+        if (t === '3d-model') {
+          btn.className = "px-4 py-3 border-b-2 border-transparent text-emerald-400/80 hover:text-emerald-300 font-medium flex items-center gap-2 whitespace-nowrap";
+        } else if (t === 'game') {
+          btn.className = "px-4 py-3 border-b-2 border-transparent text-amber-400/80 hover:text-amber-300 font-medium flex items-center gap-2 whitespace-nowrap";
+        } else {
+          btn.className = "px-4 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-medium flex items-center gap-2 whitespace-nowrap";
+        }
       }
     }
   });
@@ -133,8 +152,17 @@ function switchTab(tab) {
   const container = document.getElementById('lesson-tab-container');
   const ch = CHAPTERS_DATA.find(c => c.id === currentChapterId) || CHAPTERS_DATA[0];
 
+  if (tab !== '3d-model' && typeof ThreeModelsEngine !== 'undefined') {
+    ThreeModelsEngine.cleanup();
+  }
+
   if (tab === 'notes') {
     container.innerHTML = renderNotesTab(ch);
+  } else if (tab === '3d-model') {
+    container.innerHTML = `<div id="three-model-mount"></div>`;
+    if (typeof ThreeModelsEngine !== 'undefined') {
+      ThreeModelsEngine.render3DModel(ch.id, 'three-model-mount');
+    }
   } else if (tab === 'interactive') {
     container.innerHTML = `<div id="simulation-mount"></div>`;
     SimulationsEngine.render(ch.id, 'simulation-mount');

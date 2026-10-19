@@ -9,6 +9,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Three.js & OrbitControls CDN for 3D Rendered Interactive Models -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -161,6 +164,12 @@
             </div>
           </div>
 
+          <!-- 3D Interactive Models Button -->
+          <button onclick="scrollToSection('lesson-viewer'); switchTab('3d-model');" class="hidden sm:flex items-center gap-1.5 px-3 py-2 text-xs font-bold bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 rounded-2xl border border-emerald-500/30 transition-all">
+            <i data-lucide="box" class="w-4 h-4 text-emerald-400"></i>
+            <span>3D Models</span>
+          </button>
+
           <!-- Game Arcade Button -->
           <button onclick="scrollToSection('game-arcade-section')" class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 rounded-2xl shadow-lg shadow-amber-500/20 active:scale-95 transition-all">
             <i data-lucide="gamepad-2" class="w-4 h-4"></i>
@@ -215,22 +224,26 @@
           </p>
 
           <!-- Core Metric Badges -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 border-t border-slate-800/80">
-            <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 backdrop-blur-md">
-              <div class="text-2xl sm:text-3xl font-black text-white">4 Themes</div>
-              <div class="text-xs text-slate-400 mt-0.5">Core KSSM Domains</div>
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2 border-t border-slate-800/80">
+            <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-md">
+              <div class="text-xl sm:text-2xl font-black text-white">4 Themes</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Core KSSM</div>
             </div>
-            <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 backdrop-blur-md">
-              <div class="text-2xl sm:text-3xl font-black text-emerald-400">12 Chapters</div>
-              <div class="text-xs text-slate-400 mt-0.5">Complete Syllabus</div>
+            <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-md">
+              <div class="text-xl sm:text-2xl font-black text-emerald-400">12 Chapters</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Full Syllabus</div>
             </div>
-            <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 backdrop-blur-md">
-              <div class="text-2xl sm:text-3xl font-black text-teal-400">39 Visuals</div>
-              <div class="text-xs text-slate-400 mt-0.5">Motion Graphics</div>
+            <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-md">
+              <div class="text-xl sm:text-2xl font-black text-cyan-400">12 3D Models</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">WebGL 360°</div>
             </div>
-            <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 backdrop-blur-md">
-              <div class="text-2xl sm:text-3xl font-black text-amber-400">12 Simulators</div>
-              <div class="text-xs text-slate-400 mt-0.5">Virtual Labs &amp; Games</div>
+            <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-md">
+              <div class="text-xl sm:text-2xl font-black text-teal-400">39 Visuals</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Motion Graphics</div>
+            </div>
+            <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-md">
+              <div class="text-xl sm:text-2xl font-black text-amber-400">12 Simulators</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Labs &amp; Games</div>
             </div>
           </div>
         </div>
@@ -274,6 +287,20 @@
                 <div>
                   <div class="text-xs font-bold text-slate-100 group-hover:text-emerald-400">Quantum Bohr Orbital Electron Cloud</div>
                   <div class="text-[11px] text-slate-400">Concentric shells &amp; octet stability</div>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-white transition-all"></i>
+            </button>
+
+            <button onclick="loadChapter(5); switchTab('3d-model'); scrollToSection('lesson-viewer');" class="w-full text-left p-3.5 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-cyan-500/30 flex items-center justify-between transition-all group">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs font-mono">05</div>
+                <div>
+                  <div class="text-xs font-bold text-slate-100 group-hover:text-cyan-400 flex items-center gap-1.5">
+                    <span>3D DNA Double Helix Model</span>
+                    <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded font-mono">360°</span>
+                  </div>
+                  <div class="text-[11px] text-slate-400">Interactive WebGL base pair orbital</div>
                 </div>
               </div>
               <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-white transition-all"></i>
@@ -366,6 +393,10 @@
           <button onclick="switchTab('notes')" id="btn-tab-notes" class="px-4 py-3 border-b-2 border-emerald-500 text-emerald-400 font-bold flex items-center gap-2 whitespace-nowrap">
             <i data-lucide="file-text" class="w-4 h-4"></i>
             <span>Core Concepts &amp; Subtopics</span>
+          </button>
+          <button onclick="switchTab('3d-model')" id="btn-tab-3d-model" class="px-4 py-3 border-b-2 border-transparent text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-2 whitespace-nowrap">
+            <i data-lucide="box" class="w-4 h-4 text-emerald-400"></i>
+            <span>🪐 3D Interactive Model</span>
           </button>
           <button onclick="switchTab('interactive')" id="btn-tab-interactive" class="px-4 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-medium flex items-center gap-2 whitespace-nowrap">
             <i data-lucide="sliders" class="w-4 h-4"></i>
@@ -571,6 +602,7 @@
   <script src="js/chapters-data.js"></script>
   <script src="js/topic-visuals.js"></script>
   <script src="js/simulations.js"></script>
+  <script src="js/three-models.js"></script>
   <script src="js/science-games.js"></script>
   <script src="js/exam-data.js"></script>
   <script src="js/app.js"></script>

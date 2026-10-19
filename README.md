@@ -22,18 +22,33 @@
 * **Cascading Chain Reaction:** Splitting nuclei release Barium-141, Krypton-92, and 3 fast neutrons that trigger adjacent atoms.
 * **Boron Control Rods (SCRAM):** Moveable neutron-absorbing rods that prevent core meltdowns.
 
-### 🧬 3. Living Interactive Science Laboratories
+### 🪐 3. 12 Unique Interactive 3D WebGL Models (Three.js & OrbitControls)
+Every single chapter of the Form 4 KSSM syllabus features its own distinct, custom-rendered 3D WebGL model with full 360° orbital rotation, scroll zoom, and real-time interaction (no duplicate models):
+* **Chapter 1:** 3D Laboratory Fume Hood with sliding glass sash, exhaust duct, and eyewash station.
+* **Chapter 2:** 3D Anatomical Human Ribcage & Torso with beating heart and interactive 5 cm sternal compression.
+* **Chapter 3:** 3D Arterial Lumen with laminar erythrocyte flow and inflatable Sphygmomanometer cuff.
+* **Chapter 4:** 3D Aerodynamic Wind Turbine with rotating 3-blade rotor and dual-axis solar photovoltaic tracker.
+* **Chapter 5:** 3D B-DNA Double Helix with antiparallel sugar-phosphate backbones and complementary base pair rungs.
+* **Chapter 6:** 3D Articulated Skeletal Elbow Joint with interactive flex angle slider ($0^\circ - 140^\circ$) and bulging biceps.
+* **Chapter 7:** 3D Holographic Brain Wireframe with glowing Pituitary master gland and cervical Thyroid gland.
+* **Chapter 8:** 3D Giant Ionic Crystal Lattice of Sodium Chloride ($\text{NaCl}$) with alternating $\text{Na}^+$ and $\text{Cl}^-$ ions.
+* **Chapter 9:** 3D Metallic Alloy Dislocation Slip Plane showing foreign solute atoms locking dislocation slip.
+* **Chapter 10:** 3D Free Radical Molecule ($\bullet\text{OH}$) and Vitamin C antioxidant with electron donation neutralization.
+* **Chapter 11:** 3D Dual Glass Kinematic Drop Towers simulating coin vs. feather in atmospheric drag vs. vacuum.
+* **Chapter 12:** 3D Cutaway Nuclear Reactor Vessel with Cherenkov fuel assemblies and movable Boron control rods.
+
+### 🧬 4. Living Interactive Science Laboratories
 * **Bohr Quantum Orbital Cloud:** Concentric electron energy shells ($K, L, M$) orbiting a glowing nucleus with stability indicators.
 * **Arm Biomechanics Vector Simulator:** Interactive elbow articulation slider ($20^\circ$ to $150^\circ$) animating reciprocal biceps contraction and triceps relaxation.
 * **Mendelian Punnett Square Generator:** Dynamic monohybrid crosses with automated $3:1$ phenotypic ratio calculations.
 * **Free Fall Vacuum Tube:** Direct side-by-side comparison of coin and feather in atmospheric drag vs. an evacuated vacuum ($g = 9.81\text{ m/s}^2$).
 * **Dynamic BMI & Health Analyzer:** Real-time anthropometric BMI calculator with cardiovascular risk stratification.
 
-### 🎮 4. Science Arcade & Gamified Learning
+### 🎮 5. Science Arcade & Gamified Learning
 * **Molecule & Alloy Synthesis Lab:** Drag or click elemental tiles into a 3D-styled Synthesis Crucible to forge chemical compounds (Water $H_2O$, Salt $NaCl$, Carbon Dioxide $CO_2$) and industrial alloys (Bronze, Steel, Brass, Duralumin, Pewter) with audio SFX feedback!
 * **Emergency Responder Blitz:** Rapid-response chronological sorting for cardiac arrest, choking Heimlich maneuvers, and toxic mercury spills.
 
-### 📝 5. SPM Examination Center & Study Tools
+### 📝 6. SPM Examination Center & Study Tools
 * **Paper 1 (1511/1) Practice Bank:** 16 SPM multiple-choice questions with instant scoring, timer, and detailed scientific explanations.
 * **Paper 2 Section A PEKA Guide:** Compulsory experiment scenarios with 1-click marking scheme reveals.
 * **Paper 2 Section C KBAT Essay:** Higher-Order Thinking 12-mark essay with official grading rubrics.
